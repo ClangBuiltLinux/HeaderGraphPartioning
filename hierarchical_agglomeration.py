@@ -4,6 +4,7 @@ import json
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 from lib.graph_utils import extract_symbols_from_file
 
@@ -57,8 +58,8 @@ if __name__ == "__main__":
         print(f"Usage: {sys.argv[0]} <header_filename> <compile_commands.json>")
         sys.exit(1)
 
-    header_filename = sys.argv[1]
-    c_filenames = sys.argv[2]
+    header_filename = Path(sys.argv[1])
+    c_filenames = Path(sys.argv[2])
     proximity = compute_proximity(header_filename, c_filenames)
 
     sorted_data = sorted([(count, sym1, sym2) for (sym1, sym2), count in proximity.items()], reverse=True)
