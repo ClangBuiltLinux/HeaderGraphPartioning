@@ -17,6 +17,7 @@ def parse_file(file_path: Path) -> Dict[str, List[str]]:
             values = values_str.strip('{}').split(',')
             for value in values:
                 value = value.strip()
+                if value == "": continue
                 inverted_dict[value].append(key)
     return inverted_dict
 
