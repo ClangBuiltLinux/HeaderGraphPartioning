@@ -8,7 +8,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from lib.graph_utils import extract_symbols_from_file
 
 def process_file(row: Dict[str, str]) -> str:
-    c_file = row["file"]
+    c_file = Path(row["file"])
     flags = row["command"].split()[1:-4]
     os.chdir(row["directory"])
     c_file_symbols = extract_symbols_from_file(c_file, flags)
@@ -28,8 +28,8 @@ def compute_usage(c_commands: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''This script suggests an automatic partition of a
                                     header file.''')
-    parser.add_argument('-c', '--commands', type=Path, required=True,
-                        help='Path to compile_commands.json')
+    parser.add_argument("-c", "--commands", type=Path, required=True,
+                        help="Path to compile_commands.json")
 
     args = parser.parse_args()
     compile_commands = args.commands
