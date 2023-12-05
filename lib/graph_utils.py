@@ -16,7 +16,7 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
             if depth == 0 or (filename.name in str(node.location.file)):
                 symbols.add(name)
                 for child in node.get_children():
-                    visit_node(child, depth = 1)
+                    visit_node(child, 1)
 
         else:
             name = node.spelling
