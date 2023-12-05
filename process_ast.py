@@ -26,8 +26,8 @@ def compute_usage(c_commands: Path):
                 print(future.result())
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='''This script suggests an automatic partition of a
-                                    header file.''')
+    parser = argparse.ArgumentParser(description='''This script finds the occurrences of tokens in
+                                    a compile_commands.json.''')
     parser.add_argument('-c', '--commands', type=Path, required=True,
                         help='Path to compile_commands.json')
 
