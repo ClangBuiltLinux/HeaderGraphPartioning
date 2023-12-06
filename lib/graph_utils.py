@@ -20,7 +20,12 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
 
         else:
             name = node.spelling
-            symbols.add(name)
+            if node.kind in {
+                CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
+                CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
+                CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
+            }:
+                symbols.add(name)
             for child in node.get_children():
                 visit_node(child)
 
