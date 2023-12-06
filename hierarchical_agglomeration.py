@@ -10,8 +10,12 @@ import matplotlib.pyplot as plt
 
 from lib.graph_utils import extract_symbols_from_file
 
+DEBUG = False
+
 def compute_proximity(header_filename: Path, c_filenames: Path) -> Dict[Tuple[str, str], int]:
-    with open(c_filenames) as json_data:
+    '''finds number of times all symbols in a header appear in the same file and outputs a dict
+    of tuples with the number of occurrences as the value'''
+    with open(c_filenames, encoding="utf-8") as json_data:
         header_symbols = extract_symbols_from_file(header_filename, [], header=True)
         proximity = defaultdict(int)
         data = json.load(json_data)["data"]
@@ -25,9 +29,11 @@ def compute_proximity(header_filename: Path, c_filenames: Path) -> Dict[Tuple[st
 
 def create_distance_matrix(proximity: Dict[Tuple[str, str], int],
                            symbols: List[str]) -> np.ndarray:
+    '''Creates a distance matrix where each edge i,j =
+    1/(num_occcurences of i and j in the same c file) or 2 if not'''
     n = len(symbols)
-    LARGE_VALUE = 2
-    matrix = np.full((n, n), LARGE_VALUE)
+    large_val = 2
+    matrix = np.full((n, n), large_val)
 
     for i in range(n):
         for j in range(n):
@@ -41,7 +47,8 @@ def create_distance_matrix(proximity: Dict[Tuple[str, str], int],
     return matrix
 
 
-def hierarchical_clustering(proximity: Dict[Tuple[str, str], int]):
+def hierarchical_clustering(proximity: Dict[Tuple[str, str], int], header_filename: Path):
+    '''Generates a graph from the proxiimity of the symbols to partition them into two groups'''
     symbols = list(extract_symbols_from_file(header_filename, [], header=True))
     distance_matrix = create_distance_matrix(proximity, symbols)
     linked = linkage(distance_matrix, method='average')
@@ -55,7 +62,8 @@ def hierarchical_clustering(proximity: Dict[Tuple[str, str], int]):
 
     return symbol_to_cluster
 
-if __name__ == "__main__":
+def main():
+    global DEBUG
     parser = argparse.ArgumentParser(description='''This script finds the occurrences of
                                      tokens in a compile_commands.json.''')
     parser.add_argument('-c', '--commands', type=Path, required=True,
@@ -78,7 +86,10 @@ if __name__ == "__main__":
         for count, sym1, sym2 in sorted_data:
             print(f"Proximity SYM:{sym1} - SYM:{sym2}: {count}")
 
-    clusters = hierarchical_clustering(proximity)
+    clusters = hierarchical_clustering(proximity, header_filename)
     if DEBUG:
         for symbol, cluster_id in clusters.items():
             print(f"Symbol {symbol} is in cluster {cluster_id}")
+
+if __name__ == "__main__":
+    main()
