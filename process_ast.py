@@ -8,11 +8,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from lib.graph_utils import extract_symbols_from_file
 
 def process_file(row: Dict[str, str]) -> str:
-    c_file = row["file"]
+    c_file = Path(row["file"])
     flags = row["command"].split()[1:-4]
     os.chdir(row["directory"])
     c_file_symbols = extract_symbols_from_file(c_file, flags)
-    pieces = "linux".join(c_file.split("linux")[1:])
+    pieces = "linux".join(str(c_file).split("linux")[1:])
     return f"{pieces} : {c_file_symbols}".replace("'", "")
 
 def compute_usage(c_commands: Path):

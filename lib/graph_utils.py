@@ -6,30 +6,23 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
     '''Obtains all the ast-nodes from filename built with flags'''
     index = Index.create()
     translation_unit = index.parse(str(filename), args = flags)
-    seentwice = set()
     symbols = set()
 
-    usable_types = {
-        CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
-        CursorKind.CLASS_DECL, CursorKind.VAR_DECL, CursorKind.FUNCTION_DECL,
-        CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL
-    }
-
-    def visit_node(node):
+    def visit_node(node, depth = 0):
         '''Recursively crawls AST and adds relevant nodes'''
-        if not header and node.kind in usable_types:
+        if not header:
             name = node.spelling
-            if ".c" in str(node.location.file) or name in symbols:
-                seentwice.add(name)
-            else:
+            
+            if depth == 0 or (filename.name in str(node.location.file)):
                 symbols.add(name)
+                for child in node.get_children():
+                    visit_node(child, 1)
 
-        if header and node.kind in usable_types:
+        else:
             name = node.spelling
             symbols.add(name)
-
-        for child in node.get_children():
-            visit_node(child)
+            for child in node.get_children():
+                visit_node(child)
 
     visit_node(translation_unit.cursor)
     return symbols
