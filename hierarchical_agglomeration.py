@@ -23,12 +23,12 @@ def compute_proximity(header_filename: Path, c_filenames: Path) -> Dict[Tuple[st
                         proximity[(sym1, sym2)] = len(pairings)
     return proximity
 
-def create_distance_matrix(proximity: Dict[Tuple[str, str], int], 
+def create_distance_matrix(proximity: Dict[Tuple[str, str], int],
                            symbols: List[str]) -> np.ndarray:
     n = len(symbols)
     LARGE_VALUE = 2
     matrix = np.full((n, n), LARGE_VALUE)
-    
+
     for i in range(n):
         for j in range(n):
             if i == j:
@@ -45,7 +45,7 @@ def hierarchical_clustering(proximity: Dict[Tuple[str, str], int]):
     symbols = list(extract_symbols_from_file(header_filename, [], header=True))
     distance_matrix = create_distance_matrix(proximity, symbols)
     linked = linkage(distance_matrix, method='average')
-    
+
     plt.figure(figsize=(10, 7))
     dendrogram(linked, orientation='top', labels=symbols, distance_sort='descending')
     plt.show()
@@ -56,7 +56,7 @@ def hierarchical_clustering(proximity: Dict[Tuple[str, str], int]):
     return symbol_to_cluster
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='''This script finds the occurrences of 
+    parser = argparse.ArgumentParser(description='''This script finds the occurrences of
                                      tokens in a compile_commands.json.''')
     parser.add_argument('-c', '--commands', type=Path, required=True,
                         help='Path to compile_commands.json')
@@ -69,11 +69,12 @@ if __name__ == "__main__":
     header_filename = args.header_filename
     c_filenames = args.commands
     DEBUG = args.d
-    
+
     proximity = compute_proximity(header_filename, c_filenames)
 
     if DEBUG:
-        sorted_data = sorted([(count, sym1, sym2) for (sym1, sym2), count in proximity.items()], reverse=True)
+        sorted_data = sorted([(count, sym1, sym2) for (sym1, sym2), count in proximity.items()],
+                             reverse=True)
         for count, sym1, sym2 in sorted_data:
             print(f"Proximity SYM:{sym1} - SYM:{sym2}: {count}")
 
