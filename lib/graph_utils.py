@@ -12,7 +12,7 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
         '''Recursively crawls AST and adds relevant nodes'''
         if not header:
             name = node.spelling
-            
+
             if depth == 0 or (filename.name in str(node.location.file)):
                 symbols.add(name)
                 for child in node.get_children():
@@ -20,9 +20,18 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
 
         else:
             name = node.spelling
-            symbols.add(name)
+            if node.kind in {
+                CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
+                CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
+                CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
+            }:
+                if filename.name in str(node.location.file):
+                    symbols.add(name)
+            if node.kind in { CursorKind.FUNCTION_DECL }:
+                # Stops us from going into the function body because we don't care for headers
+                return
             for child in node.get_children():
-                visit_node(child)
+                visit_node(child, 1)
 
     visit_node(translation_unit.cursor)
     return symbols
