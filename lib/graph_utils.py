@@ -3,6 +3,12 @@ from pathlib import Path
 from typing import List, Set
 from clang.cindex import Index, CursorKind
 
+usable_types = frozenset({
+    CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
+    CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
+    CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
+})
+
 def extract_symbols_from_file(filename: Path, flags: List[str], header = False) -> Set[str]:
     '''Obtains all the ast-nodes from filename built with flags'''
     index = Index.create()
@@ -22,15 +28,10 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
         else:
             name = node.spelling
 
-            if node.kind in {
-                CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
-                CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
-                CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
-            }:
-                if filename.name in str(node.location.file):
-                    symbols.add(name)
+            if node.kind in usable_types and filename.name in str(node.location.file):
+                symbols.add(name)
 
-            if node.kind in { CursorKind.FUNCTION_DECL }:
+            if node.kind == CursorKind.FUNCTION_DECL:
                 # Stops us from going into the function body because we don't care for headers
                 return
 
