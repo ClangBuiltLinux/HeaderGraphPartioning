@@ -1,3 +1,4 @@
+'''functions used in performing hierarchical agglomeration'''
 from pathlib import Path
 from typing import List, Set
 from clang.cindex import Index, CursorKind
@@ -20,6 +21,7 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
 
         else:
             name = node.spelling
+
             if node.kind in {
                 CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
                 CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
@@ -27,9 +29,11 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
             }:
                 if filename.name in str(node.location.file):
                     symbols.add(name)
+
             if node.kind in { CursorKind.FUNCTION_DECL }:
                 # Stops us from going into the function body because we don't care for headers
                 return
+
             for child in node.get_children():
                 visit_node(child, 1)
 
