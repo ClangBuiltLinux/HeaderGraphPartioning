@@ -11,6 +11,9 @@ python ast_json.py -f ./ast_dump.txt
 Replace compile_commands.json with the relative or absolute location. 
 Optionally add -c and a filename to the ast_json invocation if you want to specify a file other than the auto generated outfile.json.
 
+These two commands generate a json file that is consumed by hierarchical_agglomeration.py.
+Invoke it using the following command to generate a graph that suggest a partition in headers.
+
 
 ```bash
 python hierarchical_agglomeration.py -f ../linux/include/linux/string.h -c outfile.json
