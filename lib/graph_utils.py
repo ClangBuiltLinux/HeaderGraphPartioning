@@ -5,8 +5,7 @@ from clang.cindex import Index, CursorKind
 
 usable_types = frozenset({
     CursorKind.STRUCT_DECL, CursorKind.ENUM_DECL, CursorKind.TYPEDEF_DECL,
-    CursorKind.CLASS_DECL, CursorKind.FUNCTION_DECL,
-    CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
+    CursorKind.FUNCTION_DECL, CursorKind.MACRO_DEFINITION, CursorKind.FIELD_DECL,
 })
 
 def extract_symbols_from_file(filename: Path, flags: List[str], header = False) -> Set[str]:
