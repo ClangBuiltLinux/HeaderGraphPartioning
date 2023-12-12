@@ -14,6 +14,8 @@ class DataModel(BaseModel):
 
 def process_file(row: Dict[str, str]) -> str:
     c_file = Path(row["file"])
+    # This takes everything between clang and -o not inclusive
+    # TODO: Remove Magic constants
     flags = row["command"].split()[1:-4]
     os.chdir(row["directory"])
     c_file_symbols = extract_symbols_from_file(c_file, flags)
