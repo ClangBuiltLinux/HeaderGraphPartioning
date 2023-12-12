@@ -19,6 +19,7 @@ def process_file(row: Dict[str, str]) -> str:
     flags = row["command"].split()[1:-4]
     os.chdir(row["directory"])
     c_file_symbols = extract_symbols_from_file(c_file, flags)
+    # Strips absolute path ie a/b/c/linux/include/linux -> include/linux
     pieces = "linux".join(str(c_file).split("linux")[1:])
     return (pieces, c_file_symbols)
 
