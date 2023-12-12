@@ -55,6 +55,7 @@ def hierarchical_clustering(proximity: Dict[Tuple[str, str], int], header_filena
 
     plt.figure(figsize=(10, 7))
     dendrogram(linked, orientation='top', labels=symbols, distance_sort='descending')
+    plt.title(f'Hierarchical Agglomeration of Symbols in {header_filename}')
     plt.show()
 
     clusters = fcluster(linked, 2, criterion='maxclust')
