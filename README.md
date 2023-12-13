@@ -22,4 +22,4 @@ Replace with the appropriate header file location.
 Optionally add -d to find proximity betwen different tokens for further analysis.
 
 Below is an example graph of linux/types.h:
-![Alt](/images/Figure_1.png)
+![Hierarchical Agglomeration on linux/types.h](/images/Figure_1.png)
