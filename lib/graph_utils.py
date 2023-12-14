@@ -33,6 +33,9 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
             if node.kind == CursorKind.FUNCTION_DECL:
                 # Stops us from going into the function body because we don't care for headers
                 return
+            if node.kind == CursorKind.STRUCT_DECL:
+                # Stops us from going into the struct body because we don't care for headers
+                return
 
             for child in node.get_children():
                 visit_node(child, 1)
