@@ -30,11 +30,9 @@ def extract_symbols_from_file(filename: Path, flags: List[str], header = False) 
             if node.kind in usable_types and filename.name in str(node.location.file):
                 symbols.add(name)
 
-            if node.kind == CursorKind.FUNCTION_DECL:
-                # Stops us from going into the function body because we don't care for headers
-                return
-            if node.kind == CursorKind.STRUCT_DECL:
-                # Stops us from going into the struct body because we don't care for headers
+            if node.kind in [CursorKind.STRUCT_DECL, CursorKind.UNION_DECL,
+                             CursorKind.FUNCTION_DECL] :
+                # Stops us from recursing too deep because we don't care for headers
                 return
 
             for child in node.get_children():
