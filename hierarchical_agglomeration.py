@@ -47,16 +47,16 @@ def create_distance_matrix(proximity: Dict[Tuple[str, str], int],
     return matrix
 
 
-def hierarchical_clustering(proximity: Dict[Tuple[str, str], int], header_filename: Path):
+def hierarchical_clustering(proximity: Dict[Tuple[str, str], int], header_filename: Path, method_name: str):
     '''Generates a graph from the proxiimity of the symbols to partition them into two groups'''
     symbols = list(extract_symbols_from_file(header_filename, [], header=True))
     distance_matrix = create_distance_matrix(proximity, symbols)
-    linked = linkage(distance_matrix, method='average')
+    linked = linkage(distance_matrix, method=method_name)
 
     plt.figure(figsize=(10, 7))
     dendrogram(linked, orientation='top', labels=symbols, distance_sort='descending')
     plt.title(f'Hierarchical Agglomeration of Symbols in {header_filename}')
-    plt.show()
+    plt.savefig('filename.png')
 
     clusters = fcluster(linked, 2, criterion='maxclust')
     symbol_to_cluster = {symbols[i]: cluster_id for i, cluster_id in enumerate(clusters)}
@@ -71,6 +71,9 @@ def main():
                         help='Path to compile_commands.json')
     parser.add_argument('-f', '--header_filename', type=Path, required=True,
                         help='Path to header')
+    parser.add_argument('-m', '--method', default='average',
+                        help='Linkage method can be average, single, complete,' +
+                        'weighted, centroid, median, or ward')
     parser.add_argument('-d', action='store_true',
                         help='Debug mode on.')
     args = parser.parse_args()
@@ -87,7 +90,7 @@ def main():
         for count, sym1, sym2 in sorted_data:
             print(f"Proximity SYM:{sym1} - SYM:{sym2}: {count}")
 
-    clusters = hierarchical_clustering(proximity, header_filename)
+    clusters = hierarchical_clustering(proximity, header_filename, args.method)
     if DEBUG:
         for symbol, cluster_id in clusters.items():
             print(f"Symbol {symbol} is in cluster {cluster_id}")
